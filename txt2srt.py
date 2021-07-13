@@ -97,11 +97,11 @@ window = tk.Tk()
 screen_width = window.winfo_screenwidth()
 screen_height = window.winfo_screenheight()
 window_width, window_height = 400, 120
-position_top = int(screen_height/2 - window_height/2)
+position_top = int((screen_height/2 - window_height/2)/2)
 position_right = int(screen_width/2 - window_width/2)
 
 window.title('txt2srt')
-window.geometry(str(window_width) + 'x' + str(window_height) + '+' + str(position_right) + '+' + str(position_top/2))
+window.geometry(str(window_width) + 'x' + str(window_height) + '+' + str(position_right) + '+' + str(position_top))
 window.geometry('400x120')
 window.configure(background='white')
 
