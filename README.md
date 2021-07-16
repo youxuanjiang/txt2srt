@@ -1,5 +1,5 @@
-# txt2srt
-方便快速地產生字幕檔 (對mac os以及其他linux based的作業系統應該相較友善)
+# txt2srt for macos
+方便快速地產生字幕檔
 
 ### 使用教學
 1. 直接雙擊txt2srt.py就可以直接執行了
