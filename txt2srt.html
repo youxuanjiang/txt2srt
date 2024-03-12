@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convert TXT to SRT</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>《txt文字轉srt字幕小幫手》</h1>
+    <h3>選擇模式:</h3>
+    <form>
+        <input type="radio" id="fix_interval" name="mode" checked>
+        <label for="fix_interval">固定區間</label>
+        <input type="radio" id="customize_interval" name="mode">
+        <label for="customize_interval">變動區間</label><br>
+    </form>
+    <br><br>
+    <label for="fileInput" class="custom-file-upload">選擇檔案</label>
+    <input id="fileInput" type="file"/>
+    <br>
+    <label for="secondInput">秒數:</label>
+    <input type="text" id="secondInput">
+    <button class="button" id="convert-timing" onclick="handleCovertTimingBtn()">轉換</button>
+    <br><br>
+    <div class="preview-container">
+        <div class="preview" id="originalPreview"></div>
+        <div class="preview" id="convertedPreview"></div>
+    </div>
+    <br>
+    <button class="button" onclick="downloadSrt()">下載</button>
+    <script src="script.js"></script>
+</body>
+</html>
