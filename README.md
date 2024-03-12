@@ -21,6 +21,9 @@
    - 在讀取狀態下再次按下「a」，該行文字讀取完畢，右側預覽畫面會顯示讀取的文字，並開始讀取下一行文字。
 4. 按下「b」停止紀錄（秒數仍在計算）。
    - 在讀取狀態下按下「b」，該行文字讀取完畢，但不會讀取下一行文字，畫面上會提示「暫停讀取」。
+  
+### DEMO
+[![Example](https://img.youtube.com/vi/za0TKyj4dIo/0.jpg)](https://www.youtube.com/watch?v=za0TKyj4dIo)
    
 ## 待開發功能
 
