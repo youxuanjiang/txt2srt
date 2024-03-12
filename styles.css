@@ -97,3 +97,7 @@ input[type="file"] {
 .custom-file-upload:hover {
     background-color:  #ffa600;
 }
+
+#current-state {
+    color: #ff0000;
+}

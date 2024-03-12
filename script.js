@@ -3,14 +3,22 @@ const fixInterval = document.getElementById("fix_interval");
 const customizeInterval = document.getElementById("customize_interval");
 const convertTimingButton = document.getElementById("convert-timing");
 const secondInput = document.getElementById("secondInput");
+const convertedPreview = document.getElementById("convertedPreview");
+const currentState = document.getElementById("current-state");
 
 let fileContent = "";
+let lines;
 let fileName = "";
 let isTiming = false;
 let timmerInterval;
 let startTime;
 let elapsedTime = 0;
 let requestId;
+let currentTime = 0;
+let previousTime = 0;
+let isGeneratingSRT = false;
+let srtIndexForCustomize = 1;
+let contentIndex = 0;
 
 fileInput.addEventListener('change', function() {
     handleFileSelect();
@@ -18,6 +26,9 @@ fileInput.addEventListener('change', function() {
 
 fixInterval.addEventListener('change', function (){
     if(fixInterval.checked) {
+        cancelAnimationFrame(requestId);
+        elapsedTime = 0;
+        isTiming = false;
         secondInput.disabled = false;
         secondInput.value = "";
         convertTimingButton.textContent = "轉換";
@@ -32,6 +43,32 @@ customizeInterval.addEventListener('change', function() {
     }
 })
 
+document.addEventListener('keydown', function(event) {
+    if (customizeInterval.checked) {
+        if (event.key == 's') {
+            timing();
+        } 
+        
+        // 文件要先讀取進來才有辦法開始記錄SRT
+        if (fileContent.length != 0) {
+            if (event.key == 'a') { // start reading line
+                genSRTFromTimer();
+                isGeneratingSRT = true;
+                currentState.textContent = "正在讀取：" + lines[contentIndex];
+
+            } else if (event.key == 'b') { // break from reading line
+                genSRTFromTimer();
+                isGeneratingSRT = false;
+                currentState.textContent = "暫停讀取";
+            }
+        }
+        
+    }
+    
+    // Log the key code when a key is pressed
+    console.log('Key pressed:', event.key);
+});
+
 function handleFileSelect() {
     const file = document.getElementById("fileInput").files[0];
     fileName = file.name;
@@ -43,6 +80,7 @@ function handleFileSelect() {
     reader.onload = function(event) {
         fileContent = event.target.result;
         document.getElementById("originalPreview").textContent = fileContent;
+        lines = fileContent.split("\n")
     };
     reader.readAsText(file);
 }
@@ -62,7 +100,6 @@ function convert() {
         return;
     }
 
-    const lines = fileContent.split("\n");
     let srtContent = "";
     let index = 1;
     let startTime = 0;
@@ -89,6 +126,15 @@ function formatTime(time) {
     return `${padZero(hours)}:${padZero(minutes)}:${seconds}`;
 }
 
+function formattedTimeForCustomize(time) {
+    const milliseconds = Math.floor(time % 1000);
+    const seconds = Math.floor((time / 1000) % 60);
+    const minutes = Math.floor((time / (1000 * 60)) % 60);
+    const hours = Math.floor((time / (1000 * 60 * 60)) % 24);
+    return `${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}.${padZero(milliseconds)}`;
+}
+
+
 function timing() {
     isTiming = !isTiming;
     if(isTiming) {
@@ -100,8 +146,22 @@ function timing() {
     }
 }
 
+function genSRTFromTimer() {
+    if(isGeneratingSRT && contentIndex<lines.length) {
+        let srtContent = "";
+        srtContent += srtIndexForCustomize + "\n";
+        srtContent += formattedTimeForCustomize(previousTime) + " --> " + formattedTimeForCustomize(currentTime) + "\n";
+        srtContent += lines[contentIndex].trim() + "\n\n";
+        document.getElementById("convertedPreview").textContent += srtContent;
+        srtIndexForCustomize++;
+        contentIndex++;
+        convertedPreview.scrollTop = convertedPreview.scrollHeight;
+    }
+    previousTime = currentTime;
+}
+
 function updateTimer() {
-    const currentTime = performance.now() - startTime + elapsedTime;
+    currentTime = performance.now() - startTime + elapsedTime;
     const milliseconds = Math.floor(currentTime % 1000);
     const seconds = Math.floor((currentTime / 1000) % 60);
     const minutes = Math.floor((currentTime / (1000 * 60)) % 60);
