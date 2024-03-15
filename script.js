@@ -9,6 +9,8 @@ const youtubeMode = document.getElementById("youtube_mode");
 const inputHint = document.getElementById("input_hint");
 const youtubePlayer = document.getElementById('youtubePlayer');
 const refershTimingButton = document.getElementById('refresh-timing');
+const nextLineButton = document.getElementById('next-line');
+const stopLineButton = document.getElementById('stop-line');
 
 let fileContent = "";
 let lines;
@@ -39,6 +41,8 @@ fileInput.addEventListener('change', function() {
 fixInterval.addEventListener('change', function (){
     if(fixInterval.checked) {
         refershTimingButton.style.display = 'none';
+        nextLineButton.style.display = 'none';
+        stopLineButton.style.display = 'none';
         cancelAnimationFrame(requestId);
         elapsedTime = 0;
         isTiming = false;
@@ -55,6 +59,8 @@ fixInterval.addEventListener('change', function (){
 customizeInterval.addEventListener('change', function() {
     if(customizeInterval.checked) {
         refershTimingButton.style.display = 'inline-block';
+        nextLineButton.style.display = 'inline-block';
+        stopLineButton.style.display = 'inline-block';
         secondInput.disabled = true;
         isGeneratingSRT = false;
         isVideoPlaying = false;
@@ -68,6 +74,8 @@ customizeInterval.addEventListener('change', function() {
 youtubeMode.addEventListener('change', function (){
     if(youtubeMode.checked) {
         refershTimingButton.style.display = 'none';
+        nextLineButton.style.display = 'inline-block';
+        stopLineButton.style.display = 'inline-block';
         cancelAnimationFrame(requestId);
         elapsedTime = 0;
         isTiming = false;
@@ -80,44 +88,27 @@ youtubeMode.addEventListener('change', function (){
 });
 
 document.addEventListener('keydown', function(event) {
-    if (customizeInterval.checked) {
-        if (event.key == 's') {
-            timing();
-        }
-
-        if (event.key == '0') {
-            refreshTiming();
-        }
-        
-        // 文件要先讀取進來才有辦法開始記錄SRT
-        if (fileContent.length != 0) {
-            if (event.key == 'a') { // start reading line
-                genSRTFromTimer();
-                isGeneratingSRT = true;
-                currentState.textContent = "正在讀取：" + lines[contentIndex];
-
-            } else if (event.key == 'b') { // break from reading line
-                genSRTFromTimer();
-                isGeneratingSRT = false;
-                currentState.textContent = "暫停讀取";
-            }
-        }
-        
+    if (event.key == 's') {
+        if(customizeInterval.checked) timing();
     }
 
-    if (youtubeMode.checked) {
-        // 文件要先讀取進來才有辦法開始記錄SRT
-        if (fileContent.length != 0) {
-            if (event.key == 'a') { // start reading line
-                genSRTFromYoutube();
-                isGeneratingSRT = true;
-                currentState.textContent = "正在讀取：" + lines[contentIndex];
+    if (event.key == '0') {
+        if(customizeInterval.checked) refreshTiming();
+    }
+    
+    // 文件要先讀取進來才有辦法開始記錄SRT
+    if (fileContent.length != 0) {
+        if (event.key == 'a') { // start reading line
+            if(customizeInterval.checked) genSRTFromTimer();
+            else if (youtubeMode.checked) genSRTFromTimer();
+            isGeneratingSRT = true;
+            currentState.textContent = "正在讀取：" + lines[contentIndex];
 
-            } else if (event.key == 'b') { // break from reading line
-                genSRTFromYoutube();
-                isGeneratingSRT = false;
-                currentState.textContent = "暫停讀取";
-            }
+        } else if (event.key == 'b') { // break from reading line
+            if(customizeInterval.checked) genSRTFromTimer();
+            else if (youtubeMode.checked) genSRTFromTimer();
+            isGeneratingSRT = false;
+            currentState.textContent = "暫停讀取";
         }
     }
     
@@ -263,6 +254,16 @@ function getCurrentTime() {
     if (player && isVideoPlaying) {
         currentTime = player.getCurrentTime();
     }
+}
+
+function nextLine() {
+    const keyEvent = new KeyboardEvent('keydown', { key: 'a' });
+    document.dispatchEvent(keyEvent);
+}
+
+function stopLine() {
+    const keyEvent = new KeyboardEvent('keydown', { key: 'b' });
+    document.dispatchEvent(keyEvent);
 }
 
 function genSRTFromTimer() {
