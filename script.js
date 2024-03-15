@@ -11,6 +11,7 @@ const youtubePlayer = document.getElementById('youtubePlayer');
 const refershTimingButton = document.getElementById('refresh-timing');
 const nextLineButton = document.getElementById('next-line');
 const stopLineButton = document.getElementById('stop-line');
+const backForwardButton = document.getElementById('back-forward');
 
 let fileContent = "";
 let lines;
@@ -43,6 +44,7 @@ fixInterval.addEventListener('change', function (){
         refershTimingButton.style.display = 'none';
         nextLineButton.style.display = 'none';
         stopLineButton.style.display = 'none';
+        backForwardButton.style.display = 'none';
         cancelAnimationFrame(requestId);
         elapsedTime = 0;
         isTiming = false;
@@ -61,6 +63,7 @@ customizeInterval.addEventListener('change', function() {
         refershTimingButton.style.display = 'inline-block';
         nextLineButton.style.display = 'inline-block';
         stopLineButton.style.display = 'inline-block';
+        backForwardButton.style.display = 'inline-block';
         secondInput.disabled = true;
         isGeneratingSRT = false;
         isVideoPlaying = false;
@@ -76,6 +79,7 @@ youtubeMode.addEventListener('change', function (){
         refershTimingButton.style.display = 'none';
         nextLineButton.style.display = 'inline-block';
         stopLineButton.style.display = 'inline-block';
+        backForwardButton.style.display = 'inline-block';
         cancelAnimationFrame(requestId);
         elapsedTime = 0;
         isTiming = false;
@@ -100,15 +104,17 @@ document.addEventListener('keydown', function(event) {
     if (fileContent.length != 0) {
         if (event.key == 'a') { // start reading line
             if(customizeInterval.checked) genSRTFromTimer();
-            else if (youtubeMode.checked) genSRTFromTimer();
+            else if (youtubeMode.checked) genSRTFromYoutube();
             isGeneratingSRT = true;
             currentState.textContent = "正在讀取：" + lines[contentIndex];
 
         } else if (event.key == 'b') { // break from reading line
             if(customizeInterval.checked) genSRTFromTimer();
-            else if (youtubeMode.checked) genSRTFromTimer();
+            else if (youtubeMode.checked) genSRTFromYoutube();
             isGeneratingSRT = false;
             currentState.textContent = "暫停讀取";
+        } else if (event.key == 'z') {
+            backForward();
         }
     }
     
@@ -294,6 +300,48 @@ function genSRTFromYoutube() {
     previousTime = currentTime;
 }
 
+function backForward() {
+    let srtContentLines = document.getElementById("convertedPreview").textContent.split("\n");
+    isGeneratingSRT = false;
+    currentState.textContent = "暫停讀取";
+    if (srtContentLines.length > 1) {
+        srtIndexForCustomize--;
+        contentIndex--;
+        srtContentLines.splice(srtContentLines.length-5, 4);
+        let srtContent = "";
+        for (let i = 0; i < srtContentLines.length-1; i++) {
+            const line = srtContentLines[i].trim() + '\n';
+            if (line !== "") {
+                srtContent += line;
+            }
+        }
+        document.getElementById("convertedPreview").textContent = srtContent;
+        if (customizeInterval.checked) {
+            if (srtContentLines[srtContentLines.length-4]) {
+                let lastTime = srtContentLines[srtContentLines.length-4].split(" --> ")[1];
+                cancelAnimationFrame(requestId);
+                secondInput.value = lastTime;
+                currentTime = parseFormattedTime(lastTime);
+                isTiming = true; // 為了確保執行timing之後一定是暫停的狀態
+                timing();
+            } else {
+                currentTime = 0;
+                refreshTiming();
+            }
+        } else if (youtubeMode.checked) {
+            if (srtContentLines[srtContentLines.length-4]) {
+                let lastTime = srtContentLines[srtContentLines.length-4].split(" --> ")[1];
+                currentTime = parseFormattedTime(lastTime);
+                player.seekTo(currentTime/1000, true);
+            } else {
+                currentTime = 0;
+                player.seekTo(0, true);
+            }
+        }
+
+    }
+}
+
 function updateTimer() {
     currentTime = performance.now() - startTime + elapsedTime;
     const milliseconds = Math.floor(currentTime % 1000);
@@ -325,7 +373,7 @@ function startTimer() {
 function stopTimer() {
     cancelAnimationFrame(requestId);
     elapsedTime = parseFormattedTime(secondInput.value);
-
+    isGeneratingSRT = false;
 }
 
 function padZero(num) {
