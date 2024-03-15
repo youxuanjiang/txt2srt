@@ -11,19 +11,24 @@
     <h3>選擇模式:</h3>
     <form>
         <input type="radio" id="fix_interval" name="mode" checked>
-        <label for="fix_interval">固定區間</label>
+        <label for="fix_interval">固定時間模式</label>
         <input type="radio" id="customize_interval" name="mode">
-        <label for="customize_interval">變動區間</label><br>
+        <label for="customize_interval">計時器模式</label>
+        <input type="radio" id="youtube_mode" name="mode">
+        <label for="youtube_mode">YouTube模式</label><br>
     </form>
     <br><br>
     <label for="fileInput" class="custom-file-upload">選擇檔案</label>
     <input id="fileInput" type="file"/>
     <br><br>
+    <div id="youtubePlayer"></div>
+    <br>
     <label id="current-state"></label>
     <br>
-    <label for="secondInput">秒數:</label>
+    <label for="secondInput" id="input_hint">秒數:</label>
     <input type="text" id="secondInput">
     <button class="button" id="convert-timing" onclick="handleCovertTimingBtn()">轉換</button>
+    <button class="button" id="refresh-timing" style="display: none;" onclick="refreshTiming()">時間歸零</button>
     <br><br>
     <div class="preview-container">
         <div class="preview" id="originalPreview"></div>
