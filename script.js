@@ -68,7 +68,7 @@ customizeInterval.addEventListener('change', function() {
         isGeneratingSRT = false;
         isVideoPlaying = false;
         secondInput.value = "00:00:00.000";
-        convertTimingButton.textContent = "計時開始";
+        convertTimingButton.textContent = "計時開始(s)";
         inputHint.textContent = "秒數：";
         destroyPlayer();
     }
@@ -112,7 +112,7 @@ document.addEventListener('keydown', function(event) {
             if(customizeInterval.checked) genSRTFromTimer();
             else if (youtubeMode.checked) genSRTFromYoutube();
             isGeneratingSRT = false;
-            currentState.textContent = "暫停讀取";
+            currentState.textContent = "暫停讀取(s)";
         } else if (event.key == 'z') {
             backForward();
         }
