@@ -32,8 +32,9 @@
    - 按下「a」、「下一句」讀取文字、「b」、「完成」暫停讀取，時間則是與影片播放的時間相同。
    - 按下「z」、「上一步」影片時間點會回到前一句話結束的時間，並且也會將最新產出的字幕刪去。
   
-### DEMO（影片版本有落差）
-[![Example](https://img.youtube.com/vi/za0TKyj4dIo/0.jpg)](https://www.youtube.com/watch?v=za0TKyj4dIo)
+### DEMO
+1. [超好用！幫影片上字幕的免費線上小工具！（使用教學）](https://www.youtube.com/watch?v=za0TKyj4dIo) (只有前兩個功能的DEMO)
+2. [超快速！幫YouTube上CC字幕！免費線上字幕小工具！（使用教學）](https://youtu.be/77WdHxwMXFk?si=6u4CmwiciSlKoLuj)
    
 ## 待開發功能
 
